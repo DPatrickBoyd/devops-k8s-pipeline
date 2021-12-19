@@ -1,4 +1,4 @@
-A full end-to-end kubernetes pipeline to showcase a full range of DevOps tools and principals.
+A full end-to-end kubernetes pipeline to showcase a full range of DevOps tools and principles.
 
 # Deliverables
 
