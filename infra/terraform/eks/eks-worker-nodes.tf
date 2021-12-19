@@ -43,11 +43,11 @@ resource "aws_eks_node_group" "demo" {
   node_group_name = "demo"
   node_role_arn   = aws_iam_role.demo-node.arn
   subnet_ids      = aws_subnet.demo[*].id
-
+  instance_types  = ["t3.large"]
   scaling_config {
-    desired_size = 1
+    desired_size = 0
     max_size     = 1
-    min_size     = 1
+    min_size     = 0
   }
 
   depends_on = [

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: openldap
+  namespace: auth
+spec:
+  serviceName: openldap
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openldap
+      app.kubernetes.io/name: openldap
+  template:
+    metadata:
+      labels:
+        app: openldap
+        app.kubernetes.io/name: openldap
+    spec:
+      terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: volume-permissions
+          image: docker.io/bitnami/bitnami-shell:10-debian-10-r265
+          command:
+            - /bin/bash
+            - '-ec'
+          args:
+            - |
+              mkdir -p /bitnami/openldap
+              chown -R "1001:1001" "/bitnami/openldap"
+          resources: {}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/openldap
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+      containers:
+      - name: openldap
+        image: bitnami/openldap:latest
+        imagePullPolicy: "Always"
+        env:
+          - name: LDAP_ROOT
+            value: "dc=techboyd,dc=com"
+          - name: LDAP_CONFIG_ADMIN_ENABLED
+            value: "yes"
+          - name: LDAP_ADMIN_USERNAME
+            value: "admin"
+          - name: LDAP_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: adminpassword
+                name: openldap
+          - name: LDAP_USERS
+            valueFrom:
+              secretKeyRef:
+                key: users
+                name: openldap
+          - name: LDAP_PASSWORDS
+            valueFrom:
+              secretKeyRef:
+                key: passwords
+                name: openldap
+        ports:
+          - name: tcp-ldap
+            containerPort: 1389
+        volumeMounts:
+          - name: data
+            mountPath: "/bitnami/openldap"
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi

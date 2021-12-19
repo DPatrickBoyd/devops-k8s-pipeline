@@ -1,6 +1,12 @@
+#secrets files
+*secret*
+
+#unready service
+**/src/*
+
 # Local .terraform directories
 **/.terraform/*
-
+**/src/*
 # .tfstate files
 *.tfstate
 *.tfstate.*

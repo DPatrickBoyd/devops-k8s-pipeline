@@ -36,3 +36,15 @@ spec:
       resources:
         requests:
           storage: 5Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rocketmongo
+  namespace: rocket
+spec:
+  selector:
+    app: rocketmongo
+  clusterIP: None
